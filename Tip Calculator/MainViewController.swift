@@ -74,11 +74,12 @@ class MainViewController: UIViewController {
     
     private let tipSlider: UISlider = {
         let slider = UISlider(frame: CGRect(x: 0, y: 0, width: 250, height: 20))
-        slider.setValue(15, animated: true)
+        slider.setValue(15, animated: false)
         slider.minimumValue = 0
         slider.maximumValue = 100
         slider.isContinuous = true
         slider.thumbTintColor = UIColor.gray
+        slider.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2))
         slider.translatesAutoresizingMaskIntoConstraints = false
         return slider
     }()
@@ -149,7 +150,7 @@ class MainViewController: UIViewController {
         view.addSubview(tipSlider)
         tipSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         tipSlider.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        tipSlider.anchorwithConstant(top: nil, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: -20, width: 0, height: 0)
+        tipSlider.anchorwithConstant(top: view.topAnchor, bottom: view.bottomAnchor, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 160, paddingTrailing: 160, width: 0, height: 0)
     }
 
     private func layoutSetup() {
