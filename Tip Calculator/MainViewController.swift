@@ -17,7 +17,7 @@ class MainViewController: UIViewController {
             .font: UIFont.init(name: "HelveticaNeue-Thin", size: 35)!
         ]
         textView.attributedText         = NSAttributedString(string: text, attributes: attributes)
-        textView.textAlignment          = .center
+        textView.textAlignment          = .left
         textView.isEditable             = false
         textView.isScrollEnabled        = false
         textView.isSelectable           = false
