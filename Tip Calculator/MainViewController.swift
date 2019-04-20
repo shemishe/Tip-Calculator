@@ -8,7 +8,9 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+class MainViewController: UIViewController, UITextFieldDelegate {
+    
+    var billAmount = 0
     
     private let myBillTextView: UITextView = {
         let textView = UITextView()
@@ -120,25 +122,33 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        priceTextField.delegate = self
+        priceTextField.placeholder = updatePrice()
         layoutSetup()
         tipSlider.setValue(15, animated: true)
         sliderSetup()
         addDoneButtonToKeyboard()
-//        textInputToDouble(priceTextField.text)
         tipSlider.addTarget(self, action: #selector(MainViewController.sliderChange), for: .valueChanged)
     }
     
-//    func textInputToDouble(_ value: String?) -> String {
-//        guard value != nil else { return "$00.00" }
-//        let doubleValue = Double(value!) ?? 0.0
-//        let formatter = NumberFormatter()
-//        formatter.currencyCode = "USD"
-//        formatter.currencySymbol = "$"
-//        formatter.minimumFractionDigits = (value!.contains(".00")) ? 0 : 2
-//        formatter.maximumFractionDigits = 2
-//        formatter.numberStyle = .currencyAccounting
-//        return formatter.string(from: NSNumber(value: doubleValue)) ?? "$\(doubleValue)"
-//    }
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if let digit = Int(string) {
+            billAmount = billAmount * 10 + digit
+            priceTextField.text = updatePrice()
+        }
+        if string == "" {
+            billAmount = billAmount/10
+            priceTextField.text = updatePrice()
+        }
+        return false
+    }
+    
+    func updatePrice() -> String? {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = NumberFormatter.Style.currency
+        let amount = Double(billAmount/100) + Double(billAmount % 100) / 100
+        return formatter.string(from: NSNumber(value: amount))
+    }
     
     func addDoneButtonToKeyboard() {
         let doneToolbar: UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
