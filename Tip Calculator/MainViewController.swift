@@ -21,6 +21,7 @@ class MainViewController: UIViewController {
         textView.isEditable             = false
         textView.isScrollEnabled        = false
         textView.isSelectable           = false
+//        textView.backgroundColor        = .gray
         textView.backgroundColor        = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
@@ -73,7 +74,7 @@ class MainViewController: UIViewController {
     }()
     
     private let tipSlider: UISlider = {
-        let slider = UISlider(frame: CGRect(x: 0, y: 0, width: 250, height: 20))
+        let slider = UISlider(frame: CGRect(x: 0, y: 0, width: 200, height: 20))
         slider.setValue(15, animated: false)
         slider.minimumValue = 0
         slider.maximumValue = 100
@@ -120,10 +121,24 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         layoutSetup()
+        tipSlider.setValue(15, animated: true)
         sliderSetup()
         addDoneButtonToKeyboard()
+//        textInputToDouble(priceTextField.text)
         tipSlider.addTarget(self, action: #selector(MainViewController.sliderChange), for: .valueChanged)
     }
+    
+//    func textInputToDouble(_ value: String?) -> String {
+//        guard value != nil else { return "$00.00" }
+//        let doubleValue = Double(value!) ?? 0.0
+//        let formatter = NumberFormatter()
+//        formatter.currencyCode = "USD"
+//        formatter.currencySymbol = "$"
+//        formatter.minimumFractionDigits = (value!.contains(".00")) ? 0 : 2
+//        formatter.maximumFractionDigits = 2
+//        formatter.numberStyle = .currencyAccounting
+//        return formatter.string(from: NSNumber(value: doubleValue)) ?? "$\(doubleValue)"
+//    }
     
     func addDoneButtonToKeyboard() {
         let doneToolbar: UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
@@ -150,48 +165,60 @@ class MainViewController: UIViewController {
         view.addSubview(tipSlider)
         tipSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         tipSlider.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        tipSlider.anchorwithConstant(top: view.topAnchor, bottom: view.bottomAnchor, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 160, paddingTrailing: 160, width: 0, height: 0)
+        tipSlider.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1).isActive = true
+        tipSlider.anchorwithConstant(top: nil, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 150, paddingTrailing: 150, width: 0, height: 0)
     }
 
     private func layoutSetup() {
         
-        let topHalfContainerView = UIView()
-        let bottomHalfContainerView = UIView()
-        view.addSubview(topHalfContainerView)
-        view.addSubview(bottomHalfContainerView)
-        topHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
-        bottomHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
-//        topHalfContainerView.backgroundColor = .gray
-//        bottomHalfContainerView.backgroundColor = .orange
+        let leftContainerView = UIView()
+        let rightContainerView = UIView()
+        let leftTopHalfContainerView = UIView()
+        let leftBottomHalfContainerView = UIView()
+        view.addSubview(leftContainerView)
+        view.addSubview(rightContainerView)
+        leftContainerView.addSubview(leftTopHalfContainerView)
+        leftContainerView.addSubview(leftBottomHalfContainerView)
+        leftContainerView.translatesAutoresizingMaskIntoConstraints = false
+        rightContainerView.translatesAutoresizingMaskIntoConstraints = false
+        leftTopHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
+        leftBottomHalfContainerView.translatesAutoresizingMaskIntoConstraints = false
+//        leftContainerView.backgroundColor = .gray
+//        rightContainerView.backgroundColor = .orange
+//        leftTopHalfContainerView.backgroundColor = .red
+//        leftBottomHalfContainerView.backgroundColor = .blue
         
-        topHalfContainerView.addSubview(myBillTextView)
-        myBillTextView.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor).isActive = true
-        myBillTextView.centerYAnchor.constraint(equalTo: topHalfContainerView.centerYAnchor).isActive = true
+        leftTopHalfContainerView.addSubview(myBillTextView)
+        myBillTextView.anchorwithConstant(top: leftTopHalfContainerView.topAnchor, bottom: nil, leading: leftTopHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 150, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
+
+        leftTopHalfContainerView.addSubview(priceTextField)
+        priceTextField.anchorwithConstant(top: myBillTextView.bottomAnchor, bottom: nil, leading: leftTopHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
+
+        leftTopHalfContainerView.addSubview(myTipTextView)
+        myTipTextView.anchorwithConstant(top: nil, bottom: leftTopHalfContainerView.bottomAnchor, leading: nil, trailing: leftTopHalfContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
         
-        topHalfContainerView.addSubview(priceTextField)
-        priceTextField.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor).isActive = true
-        priceTextField.anchorwithConstant(top: myBillTextView.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftBottomHalfContainerView.addSubview(totalTipAmount)
+        totalTipAmount.anchorwithConstant(top: leftBottomHalfContainerView.topAnchor, bottom: nil, leading: nil, trailing: leftBottomHalfContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+    
+        leftBottomHalfContainerView.addSubview(myTotalTextView)
+        myTotalTextView.anchorwithConstant(top: leftBottomHalfContainerView.topAnchor, bottom: nil, leading: leftBottomHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 125, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
         
-        topHalfContainerView.addSubview(myTipTextView)
-        myTipTextView.centerXAnchor.constraint(equalTo: topHalfContainerView.centerXAnchor).isActive = true
-        myTipTextView.anchorwithConstant(top: priceTextField.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 20, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftBottomHalfContainerView.addSubview(myTotalAmount)
+        myTotalAmount.anchorwithConstant(top: myTotalTextView.bottomAnchor, bottom: nil, leading: leftBottomHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
         
-        view.addSubview(totalTipAmount)
-        totalTipAmount.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        totalTipAmount.anchorwithConstant(top: myTipTextView.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        // Container View Contraints
         
-        view.addSubview(myTotalTextView)
-        myTotalTextView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        myTotalTextView.anchorwithConstant(top: totalTipAmount.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 20, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftTopHalfContainerView.heightAnchor.constraint(equalTo: leftContainerView.heightAnchor, multiplier: 0.5).isActive = true
+        leftTopHalfContainerView.anchorwithConstant(top: leftContainerView.topAnchor, bottom: nil, leading: leftContainerView.leadingAnchor, trailing: leftContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
         
-        view.addSubview(myTotalAmount)
-        myTotalAmount.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        myTotalAmount.anchorwithConstant(top: myTotalTextView.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftBottomHalfContainerView.heightAnchor.constraint(equalTo: leftContainerView.heightAnchor, multiplier: 0.5).isActive = true
+        leftBottomHalfContainerView.anchorwithConstant(top: nil, bottom: leftContainerView.bottomAnchor, leading: leftContainerView.leadingAnchor, trailing: leftContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
         
-        topHalfContainerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5).isActive = true
-        topHalfContainerView.anchorwithConstant(top: view.topAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
-        bottomHalfContainerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5).isActive = true
-        bottomHalfContainerView.anchorwithConstant(top: nil, bottom: view.bottomAnchor, leading: view.leadingAnchor, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8).isActive = true
+        leftContainerView.anchorwithConstant(top: view.topAnchor, bottom: view.bottomAnchor, leading: view.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        
+        rightContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2).isActive = true
+        rightContainerView.anchorwithConstant(top: view.topAnchor, bottom: view.bottomAnchor, leading: nil, trailing: view.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
     }
     
 
