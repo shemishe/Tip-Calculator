@@ -10,7 +10,9 @@ import UIKit
 
 class MainViewController: UIViewController, UITextFieldDelegate {
     
-    var billAmount = 0
+    var billBeforeTip = Float()
+    var billAmount = Int()
+    var billAfterTip = Float()
     
     private let myBillTextView: UITextView = {
         let textView = UITextView()
@@ -33,7 +35,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.placeholder           = "$00.00"
         textField.textColor             = UIColor.black
-        textField.font                  = UIFont.init(name: "HelveticaNeue-Thin", size: 70)
+        textField.font                  = UIFont.init(name: "HelveticaNeue-Thin", size: 60)
         textField.keyboardType          = UIKeyboardType.numberPad
         textField.textAlignment         = .center
         textField.borderStyle           = UITextField.BorderStyle.roundedRect
@@ -132,6 +134,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let preText = textField.text as NSString?,
+            preText.replacingCharacters(in: range, with: string).count <= 10 else {
+                return false
+        }
+
         if let digit = Int(string) {
             billAmount = billAmount * 10 + digit
             priceTextField.text = updatePrice()
@@ -142,7 +149,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         }
         return false
     }
-    
+
     func updatePrice() -> String? {
         let formatter = NumberFormatter()
         formatter.numberStyle = NumberFormatter.Style.currency
@@ -165,10 +172,60 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     @objc func doneButtonAction() {
         priceTextField.resignFirstResponder()
+        print(priceTextField.text!)
     }
     
     @objc func sliderChange() {
         myTipTextView.text = "My Tip (\(Int(tipSlider.value.rounded()))%):"
+        
+        var priceStringText = String()
+        var floatTipAmount = Float()
+        var stringTipAmount = String()
+        var floatTotalAmount = Float()
+        
+        if let priceOptionalStringText = self.priceTextField.text {
+            priceStringText = String(priceOptionalStringText.dropFirst())
+        }
+        
+        let floatPriceText = Float(priceStringText)
+        
+        if let priceText = floatPriceText {
+            floatTipAmount = ((tipSlider.value.rounded() / 100) * priceText)
+            stringTipAmount = "\(floatTipAmount.string(fractionDigits: 2))"
+        }
+        
+        totalTipAmount.text = "$" + stringTipAmount
+        
+        if let totalAmountOne = Float(priceStringText) {
+            if let totalAmountTwo = Float(stringTipAmount) {
+                floatTotalAmount = totalAmountOne + totalAmountTwo
+                
+            }
+        }
+
+        myTotalAmount.text = "$" + "\(floatTotalAmount.string(fractionDigits: 2))"
+        
+//        if let priceText = floatPriceText {
+//            totalTipAmount.text = "\((tipSlider.value / 100) * priceText)"
+//        }
+        
+//        if let priceText = self.priceTextField.text {
+//            if let price = Float(priceText) {
+//                print("Slider x TipPrice = \(tipSlider.value * price)")
+//                totalTipAmount.text = "\((tipSlider.value / 100) * price)"
+//            } else {
+//                print("\(priceText) is not convertible to Float.")
+//            }
+//        }
+        
+//        if let priceText = self.priceTextField.text {
+//            guard let price = Float(priceText) else {
+//                print("\(priceText) is not convertible to Float.")
+//                return
+//            }
+//            let tip = Float(tipSlider.value)
+//            totalTipAmount.text = "\((tip / 100) * price)"
+//        }
     }
     
     private func sliderSetup() {
