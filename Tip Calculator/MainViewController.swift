@@ -31,7 +31,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         return textView
     }()
     
-    private let priceTextField: UITextField = {
+    private let billTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder           = "$00.00"
         textField.textColor             = UIColor.black
@@ -45,7 +45,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
-    private let myTipTextView: UITextView = {
+    private let myTipPercentTextView: UITextView = {
         let textView = UITextView()
         let text = "My Tip (15%):"
         let attributes: [NSAttributedString.Key: Any] = [
@@ -61,7 +61,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         return textView
     }()
     
-    private let totalTipAmount: UITextView = {
+    private let calculatedTipAmount: UITextView = {
         let textView = UITextView()
         let text = "$0.00"
         let attributes: [NSAttributedString.Key: Any] = [
@@ -89,7 +89,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         return slider
     }()
     
-    private let myTotalTextView: UITextView = {
+    private let myFinalTotalTextView: UITextView = {
         let textView = UITextView()
         let text = "Total:"
         let attributes: [NSAttributedString.Key: Any] = [
@@ -105,7 +105,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         return textView
     }()
     
-    private let myTotalAmount: UITextView = {
+    private let myFinalTotalAmount: UITextView = {
         let textView = UITextView()
         let text = "$0.00"
         let attributes: [NSAttributedString.Key: Any] = [
@@ -124,8 +124,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        priceTextField.delegate = self
-        priceTextField.placeholder = updatePrice()
+        billTextField.delegate = self
+        billTextField.placeholder = updatePrice()
         layoutSetup()
         tipSlider.setValue(15, animated: true)
         sliderSetup()
@@ -141,11 +141,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
 
         if let digit = Int(string) {
             billAmount = billAmount * 10 + digit
-            priceTextField.text = updatePrice()
+            billTextField.text = updatePrice()
         }
         if string == "" {
             billAmount = billAmount/10
-            priceTextField.text = updatePrice()
+            billTextField.text = updatePrice()
         }
         return false
     }
@@ -167,43 +167,43 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         doneToolbar.items = items
         doneToolbar.sizeToFit()
         
-        priceTextField.inputAccessoryView = doneToolbar
+        billTextField.inputAccessoryView = doneToolbar
     }
     
     @objc func doneButtonAction() {
-        priceTextField.resignFirstResponder()
-        print(priceTextField.text!)
+        billTextField.resignFirstResponder()
+        print(billTextField.text!)
     }
     
     @objc func sliderChange() {
-        myTipTextView.text = "My Tip (\(Int(tipSlider.value.rounded()))%):"
+        myTipPercentTextView.text = "My Tip (\(Int(tipSlider.value.rounded()))%):"
         
-        var priceStringText = String()
+        var billStringText = String()
         var floatTipAmount = Float()
-        var stringTipAmount = String()
+        var tipStringAmount = String()
         var floatTotalAmount = Float()
         
-        if let priceOptionalStringText = self.priceTextField.text {
-            priceStringText = String(priceOptionalStringText.dropFirst())
+        if let billOptionalStringText = self.billTextField.text {
+            billStringText = String(billOptionalStringText.dropFirst())
         }
         
-        let floatPriceText = Float(priceStringText)
+        let billOptionalFloatText = Float(billStringText)
         
-        if let priceText = floatPriceText {
-            floatTipAmount = ((tipSlider.value.rounded() / 100) * priceText)
-            stringTipAmount = "\(floatTipAmount.string(fractionDigits: 2))"
+        if let billFloatText = billOptionalFloatText {
+            floatTipAmount = ((tipSlider.value.rounded() / 100) * billFloatText)
+            tipStringAmount = "\(floatTipAmount.string(fractionDigits: 2))"
         }
         
-        totalTipAmount.text = "$" + stringTipAmount
+        calculatedTipAmount.text = "$" + tipStringAmount
         
-        if let totalAmountOne = Float(priceStringText) {
-            if let totalAmountTwo = Float(stringTipAmount) {
+        if let totalAmountOne = Float(billStringText) {
+            if let totalAmountTwo = Float(tipStringAmount) {
                 floatTotalAmount = totalAmountOne + totalAmountTwo
                 
             }
         }
 
-        myTotalAmount.text = "$" + "\(floatTotalAmount.string(fractionDigits: 2))"
+        myFinalTotalAmount.text = "$" + "\(floatTotalAmount.string(fractionDigits: 2))"
         
 //        if let priceText = floatPriceText {
 //            totalTipAmount.text = "\((tipSlider.value / 100) * priceText)"
@@ -258,20 +258,20 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         leftTopHalfContainerView.addSubview(myBillTextView)
         myBillTextView.anchorwithConstant(top: leftTopHalfContainerView.topAnchor, bottom: nil, leading: leftTopHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 150, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
 
-        leftTopHalfContainerView.addSubview(priceTextField)
-        priceTextField.anchorwithConstant(top: myBillTextView.bottomAnchor, bottom: nil, leading: leftTopHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
+        leftTopHalfContainerView.addSubview(billTextField)
+        billTextField.anchorwithConstant(top: myBillTextView.bottomAnchor, bottom: nil, leading: leftTopHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
 
-        leftTopHalfContainerView.addSubview(myTipTextView)
-        myTipTextView.anchorwithConstant(top: nil, bottom: leftTopHalfContainerView.bottomAnchor, leading: nil, trailing: leftTopHalfContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftTopHalfContainerView.addSubview(myTipPercentTextView)
+        myTipPercentTextView.anchorwithConstant(top: nil, bottom: leftTopHalfContainerView.bottomAnchor, leading: nil, trailing: leftTopHalfContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
         
-        leftBottomHalfContainerView.addSubview(totalTipAmount)
-        totalTipAmount.anchorwithConstant(top: leftBottomHalfContainerView.topAnchor, bottom: nil, leading: nil, trailing: leftBottomHalfContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
+        leftBottomHalfContainerView.addSubview(calculatedTipAmount)
+        calculatedTipAmount.anchorwithConstant(top: leftBottomHalfContainerView.topAnchor, bottom: nil, leading: nil, trailing: leftBottomHalfContainerView.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeading: 0, paddingTrailing: 0, width: 0, height: 0)
     
-        leftBottomHalfContainerView.addSubview(myTotalTextView)
-        myTotalTextView.anchorwithConstant(top: leftBottomHalfContainerView.topAnchor, bottom: nil, leading: leftBottomHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 125, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
+        leftBottomHalfContainerView.addSubview(myFinalTotalTextView)
+        myFinalTotalTextView.anchorwithConstant(top: leftBottomHalfContainerView.topAnchor, bottom: nil, leading: leftBottomHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 125, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
         
-        leftBottomHalfContainerView.addSubview(myTotalAmount)
-        myTotalAmount.anchorwithConstant(top: myTotalTextView.bottomAnchor, bottom: nil, leading: leftBottomHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
+        leftBottomHalfContainerView.addSubview(myFinalTotalAmount)
+        myFinalTotalAmount.anchorwithConstant(top: myFinalTotalTextView.bottomAnchor, bottom: nil, leading: leftBottomHalfContainerView.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeading: 20, paddingTrailing: 0, width: 0, height: 0)
         
         // Container View Contraints
         
